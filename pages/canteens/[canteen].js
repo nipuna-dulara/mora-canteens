@@ -259,8 +259,8 @@ export default function Page({ can, reviews }) {
 
                         <div>
                             {
-                                (reviewS != null) ? reviewS.map((review) => {
-                                    return <Review timestamp={review.time} comment={review.Review} rating={(review.Efficiency + review.Service + review.Foodtaste + review.Hygiene) / 4}></Review>
+                                (reviewS != null) ? reviewS.map((review, key) => {
+                                    return <Review key={key} timestamp={review.time} comment={review.Review} rating={(review.Efficiency + review.Service + review.Foodtaste + review.Hygiene) / 4}></Review>
                                 }) : <p>Loading...</p>
                             }
 
