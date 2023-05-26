@@ -2,12 +2,14 @@ import '@/styles/globals.css'
 import React from 'react';
 import Head from 'next/head';
 import MoraCanteensTitle from '@/components/Heading';
+import { useRouter } from 'next/router';
 import CanteenCard from '@/components/CanteenCards';
 export default function App({ Component, pageProps }) {
+  const router = useRouter();
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-800 to-gray-400">
       <Head>
-        <title>Mora Canteens</title>
+        <title>Mora Cuisine</title>
       </Head>
       <header className="bg-sky-950 shadow-lg fixed top-0 w-full">
         <nav className="container mx-auto py-1 px-6 md:px-12">
