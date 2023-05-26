@@ -27,7 +27,7 @@ const firebaseConfig = {
 
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig, 'second');
+const app = initializeApp(firebaseConfig, 'first');
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
 

@@ -18,7 +18,7 @@ const firebaseConfig = {
 
 
 // Initialize Firebase
-const app2 = initializeApp(firebaseConfig, "first");
+const app2 = initializeApp(firebaseConfig, "zero");
 export async function getServerSideProps(context) {
   const db = getFirestore(app2);
 
