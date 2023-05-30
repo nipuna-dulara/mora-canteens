@@ -83,16 +83,18 @@ const Review = ({ comment, rating, timestamp }) => {
                     <div className="divide-x-2 divide-gray-800  ">
 
                         <div>
-                            <Typography variant="h6" gutterBottom>
+                            <Box sx={{ zIndex: 0 }}>
+                                <Typography variant="h6" gutterBottom>
 
-                            </Typography>
-                            <Rating
-                                name="star-rating"
-                                value={rating}
-
-                                size="large"
-                                readOnly
-                            />
+                                </Typography>
+                                <Rating
+                                    name="star-rating"
+                                    value={rating}
+                                    sx={{ zIndex: 0 }}
+                                    size="large"
+                                    readOnly
+                                />
+                            </Box>
                         </div>
                     </div>
                 </div>

@@ -7,11 +7,11 @@ import CanteenCard from '@/components/CanteenCards';
 export default function App({ Component, pageProps }) {
   const router = useRouter();
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-800 to-gray-400">
+    <div className="min-h-screen bg-gradient-to-b from-sky-800 to-gray-400" >
       <Head>
         <title>Mora Cuisine</title>
       </Head>
-      <header className="bg-sky-950 shadow-lg fixed top-0 w-full">
+      <header className="bg-sky-950 shadow-lg fixed top-0 w-full " style={{ zIndex: 2000 }}>
         <nav className="container mx-auto py-1 px-6 md:px-12">
           <div className="flex flex-col md:flex-row justify-between md:items-center">
             <MoraCanteensTitle />
