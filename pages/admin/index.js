@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import Rating from '@mui/material/Rating';
+import Image from 'next/image';
 const firebaseConfig = {
     apiKey: "AIzaSyDdMZcr4O7MQ7p06Z5I8rBO1KZT7IK6uOg",
     authDomain: "mora-canteens.firebaseapp.com",
@@ -201,7 +202,7 @@ export default function AdminInterface({ canteens, reviewsl, showArray }) {
             return null; // Render null while the image is being fetched
         }
 
-        return <img src={downloadURL} width={300} height={300} alt="Complain" />;
+        return <Image src={downloadURL} width={300} height={300} alt="Complain" />;
     };
 
     const Complains = () => {
@@ -369,15 +370,15 @@ export default function AdminInterface({ canteens, reviewsl, showArray }) {
                                         id="demo-simple-select"
                                         value={scanteen}
                                         label="Age"
-                                        onChange={() => { setsCanteen(event.target.value); }}
+                                        onChange={handleChange}
                                     >
                                         {canteenList.map((can, key) => {
-                                            return <MenuItem value={can.name} >{can.name}</MenuItem>
+                                            return <MenuItem value={can.name} key={key} >{can.name}</MenuItem>
                                         })}
                                     </Select>
                                 </FormControl>
                             </Box>
-
+                            <Complains />
                         </div>
                     </div>
                 );
@@ -403,10 +404,10 @@ export default function AdminInterface({ canteens, reviewsl, showArray }) {
                                         id="demo-simple-select"
                                         value={scanteen}
                                         label="Age"
-                                        onChange={handleChange}
+                                        onChange={(event) => { setsCanteen(event.target.value); }}
                                     >
                                         {canteenList.map((can, key) => {
-                                            return <MenuItem value={can.name} >{can.name}</MenuItem>
+                                            return <MenuItem value={can.name} key={key}>{can.name}</MenuItem>
                                         })}
                                     </Select>
                                 </FormControl>

@@ -25,9 +25,9 @@ export default function App({ Component, pageProps }) {
           </nav>
         </header>
         <div className='py-20'><Component {...pageProps} /></div>
-        <footer className="bg-sky-950 bottom-0 w-full fixed text-white py-2 shadow-lg flex flex-col items-center justify-center">
+        <footer className="bg-sky-950 bottom-0 w-full fixed text-white py-1 shadow-lg flex flex-col items-center justify-center">
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1">
             <p className="text-center text-sm">Powered By </p>
             <Image
               src={flaLogo} // Replace with the path to your logo image
@@ -36,7 +36,7 @@ export default function App({ Component, pageProps }) {
               height={24} // Adjust the height according to your logo size
             />
           </div>
-          <p className="text-center text-sm mb-1">MSU © 2023</p>
+          <p className="text-center text-sm mb-">MSU © 2023</p>
         </footer>
 
       </div>

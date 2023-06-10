@@ -15,6 +15,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import Collapse from '@mui/material/Collapse';
 import imageCompression from 'browser-image-compression';
+import Image from 'next/image';
 // import app from "../../firebase/clientApp";
 import { initializeApp } from "firebase/app";
 import { getFirestore, addDoc, collection, setDoc, doc, updateDoc, query, getDocs, where } from "firebase/firestore";
@@ -59,7 +60,7 @@ const ComplainIntput = () => {
             const promises = files.map(async (file) => {
                 try {
                     const options = {
-                        maxSizeMB: 1, // Maximum file size after compression (adjust as needed)
+                        maxSizeMB: 0.5, // Maximum file size after compression (adjust as needed)
                         maxWidthOrHeight: 800, // Maximum width or height of the compressed image (adjust as needed)
                         useWebWorker: true, // Use web workers for faster compression (if available)
                     };
@@ -213,7 +214,7 @@ const ComplainIntput = () => {
                     ))}
                 {downloadURLs.length > 0 &&
                     downloadURLs.map((downloadURL, index) => (
-                        <img key={index} src={downloadURL} alt={`Uploaded Image ${index}`} />
+                        <Image key={index} src={downloadURL} alt={`Uploaded Image ${index}`} />
                     ))}
                 <br />
                 <br />
