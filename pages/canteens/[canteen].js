@@ -123,11 +123,30 @@ export async function getServerSideProps(context) {
         can = doc.data();
     });
     console.log("get reviews function")
-    const q2 = query(collection(db, "Reviews"), where("canteen", "==", context.params.canteen));
+    // Execute the query to retrieve the document
+    const querySnapshot = await getDocs(q);
 
+    // Get the reference to the specific document
+    const docRef1 = querySnapshot.docs[0].ref;
+
+    // Reference the "Reviews" collection inside the document
+    const reviewsCollectionRef = collection(docRef1, "Reviews");
+    const priceCollectionRef = collection(docRef1, "Prices");
     let reviews = [];
-    const canteens2 = await getDocs(q2);
-    canteens2.forEach((doc) => {
+    let prices = [];
+    const priceQuerySnapshot = await getDocs(priceCollectionRef);
+
+    priceQuerySnapshot.forEach((doc) => {
+
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
+        prices.push(doc.data())
+    });
+
+    const limitedReviewsQuery = query(reviewsCollectionRef, limit(20), where("approved", "==", true), orderBy("time"));
+    const reviewsQuerySnapshot = await getDocs(limitedReviewsQuery);
+
+    reviewsQuerySnapshot.forEach((doc) => {
 
         // doc.data() is never undefined for query doc snapshots
         console.log(doc.id, " => ", doc.data());
@@ -136,13 +155,14 @@ export async function getServerSideProps(context) {
 
 
     return {
-        props: { can, reviews }, // will be passed to the page component as props
+        props: { can, reviews, prices }, // will be passed to the page component as props
     };
 }
-export default function Page({ can, reviews }) {
+export default function Page({ can, reviews, prices }) {
     const db = getFirestore(app);
     const [value, setValue] = useState(0);
     const [reviewS, setReviewS] = useState(reviews);
+    const [priceList, setPriceList] = useState(prices);
     const router = useRouter();
 
 
@@ -269,7 +289,22 @@ export default function Page({ can, reviews }) {
                         </div>
                     </TabPanel>
                     <TabPanel value={value} index={1}>
-                        Item Two
+                        <div className="container mx-auto py-8 text-black">
+                            <h1 className="text-3xl font-bold mb-4">Price List</h1>
+                            {priceList.length > 0 ? (
+                                <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {priceList.map((item) => (
+                                        <div key={item.id} className="bg-gradient-to-b max-w-sm from-yellow-50 to-white p-2  rounded-lg shadow-md">
+                                            <h2 className="text-xl font-semibold mb-1">{item.name}</h2>
+
+                                            <p className="text-gray-700 text-lg  ">Rs. {item.price}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p>Loading price list...</p>
+                            )}
+                        </div>
                     </TabPanel>
                 </div>
             </div>

@@ -17,8 +17,10 @@ import Collapse from '@mui/material/Collapse';
 import imageCompression from 'browser-image-compression';
 // import app from "../../firebase/clientApp";
 import { initializeApp } from "firebase/app";
-import { getFirestore, addDoc, collection } from "firebase/firestore";
+import { getFirestore, addDoc, collection, setDoc, doc, updateDoc, query, getDocs, where } from "firebase/firestore";
 import { useRouter } from 'next/router';
+import appContext from '@/context/context';
+import { useContext } from 'react';
 const firebaseConfig = {
     apiKey: "AIzaSyDdMZcr4O7MQ7p06Z5I8rBO1KZT7IK6uOg",
     authDomain: "mora-canteens.firebaseapp.com",
@@ -48,7 +50,7 @@ const ComplainIntput = () => {
         setFiles(selectedFiles);
     };
 
-
+    const context = useContext(appContext);
     const handleUpload = async () => {
         let images = files.map((file) => {
             return file.name
@@ -103,14 +105,28 @@ const ComplainIntput = () => {
         } catch (error) {
             console.log('Error uploading files: ', error);
         }
-        const docRef = await addDoc(collection(db, "Complains"), {
+        const q = query(collection(db, "Canteens"), where("name", "==", router.query.canteen));
+
+        // Execute the query to retrieve the document
+        const querySnapshot = await getDocs(q);
+
+        // Get the reference to the specific document
+        const docRef1 = querySnapshot.docs[0].ref;
+
+        // Reference the "Reviews" collection inside the document
+        const complainsCollectionRef = collection(docRef1, "Complains");
+        const docRef = await addDoc(complainsCollectionRef, {
             canteen: router.query.canteen,
             type: type,
             time: Date.now(),
             approved: false,
             complain: complain,
             images: JSON.stringify(images)
-        }).then(() => { console.log('ran'); setSuccess(true); setComplain(""); setFiles(null); setType(null) }).catch((e) => { console.log(e) });
+        }).then(() => {
+            console.log('ran'); setSuccess(true); setComplain(""); setFiles(null); setType(null)
+            context.setsContext("complain");
+            router.push('/');
+        }).catch((e) => { console.log(e) });
     };
 
     return (

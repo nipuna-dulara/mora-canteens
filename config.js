@@ -1,0 +1,1 @@
+export const adminPw = "Admin123456mora";

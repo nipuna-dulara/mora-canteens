@@ -14,6 +14,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import IconButton from "@mui/material/IconButton";
 import { getFirestore, addDoc, collection, setDoc, doc, updateDoc, query, getDocs, where } from "firebase/firestore";
+import appContext from '@/context/context';
+import { useContext } from 'react';
 const firebaseConfig = {
     apiKey: "AIzaSyDdMZcr4O7MQ7p06Z5I8rBO1KZT7IK6uOg",
     authDomain: "mora-canteens.firebaseapp.com",
@@ -29,6 +31,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig, 'second');
 export default function Review() {
+    const context = useContext(appContext);
     const db = getFirestore(app);
     const [success, setSuccess] = useState(false);
     const router = useRouter();
@@ -42,7 +45,19 @@ export default function Review() {
     const reviewHandler = async () => {
 
         console.log('document added ')
-        const docRef = await addDoc(collection(db, "Reviews"), {
+        const q = query(collection(db, "Canteens"), where("name", "==", router.query.canteen));
+
+        // Execute the query to retrieve the document
+        const querySnapshot = await getDocs(q);
+
+        // Get the reference to the specific document
+        const docRef1 = querySnapshot.docs[0].ref;
+
+        // Reference the "Reviews" collection inside the document
+        const reviewsCollectionRef = collection(docRef1, "Reviews");
+        const unApprovedRef = collection(db, "Reviews");
+
+        const docRef = await addDoc(reviewsCollectionRef, {
             canteen: router.query.canteen,
             time: Date.now(),
             approved: false,
@@ -51,20 +66,26 @@ export default function Review() {
             Foodtaste: Foodtaste,
             Service: Service,
             Review: Review
-        }).then(() => { console.log('ran'); setSuccess(true); setEfficiency(0); setFoodtaste(0); setHygiene(0); setService(0); setReview("") }).catch((e) => { console.log(e) });
-        const q = query(collection(db, "Canteens"), where("name", "==", router.query.canteen));
+        }).then(async (docp) => {
+            console.log('ran'); setSuccess(true); setEfficiency(0); setFoodtaste(0); setHygiene(0); setService(0); setReview("");
+            const docRef2 = await addDoc(unApprovedRef, {
+                docId: docp.id,
+                canteen: router.query.canteen,
+                time: Date.now(),
+                approved: false,
+                Efficiency: Efficiency,
+                Hygiene: Hygiene,
+                Foodtaste: Foodtaste,
+                Service: Service,
+                Review: Review
+            })
+        }).catch((e) => { console.log(e) });
 
         let can;
-        const canteens = await getDocs(q);
-        canteens.forEach((doc) => {
-            // doc.data() is never undefined for query doc snapshots
-            console.log(doc.id, " => ", doc.data());
-            can = doc.data();
-        });
+        querySnapshot.forEach((Doc) => {
 
-        canteens.forEach((Doc) => {
-
-
+            console.log(Doc.id, " => ", Doc.data());
+            can = Doc.data();
 
             const updatedData = {
                 Reviews: can.Reviews + 1,
@@ -77,6 +98,8 @@ export default function Review() {
             updateDoc(doc(db, "Canteens", Doc.id), updatedData)
                 .then(() => {
                     console.log("Document updated successfully!");
+                    context.setsContext("review");
+                    router.push('/');
                 })
                 .catch((error) => {
                     console.error("Error updating document: ", error);
@@ -88,38 +111,38 @@ export default function Review() {
 
 
         <div>
+            <div className="flex w-full items-start justify-start">
+                <IconButton
+                    aria-label="close"
 
-            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="flex w-full items-start justify-start">
+                    size="large"
+                    onClick={() => {
+                        router.back();
+                    }}
+                >
+                    <KeyboardBackspaceIcon fontSize="inherit" />
+                </IconButton>
+                <p className="text-cyan-900 text-xl pt-3 ml-2 ">Review {router.query.canteen}</p></div>
+            <Collapse in={success}>
+                <Alert severity="success" action={
                     <IconButton
                         aria-label="close"
-
-                        size="large"
+                        color="inherit"
+                        size="small"
                         onClick={() => {
-                            router.back();
+                            setSuccess(false);
                         }}
                     >
-                        <KeyboardBackspaceIcon fontSize="inherit" />
+                        <CloseIcon fontSize="inherit" />
                     </IconButton>
-                    <p className="text-cyan-900 text-xl pt-3 ml-2 ">Review {router.query.canteen}</p></div>
-                <Collapse in={success}>
-                    <Alert severity="success" action={
-                        <IconButton
-                            aria-label="close"
-                            color="inherit"
-                            size="small"
-                            onClick={() => {
-                                setSuccess(false);
-                            }}
-                        >
-                            <CloseIcon fontSize="inherit" />
-                        </IconButton>
-                    }>
-                        <AlertTitle>Success</AlertTitle>
-                        review successfully recorded - <strong>Thank you</strong>
-                    </Alert>
+                }>
+                    <AlertTitle>Success</AlertTitle>
+                    review successfully recorded - <strong>Thank you</strong>
+                </Alert>
 
-                </Collapse>
+            </Collapse>
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-4 gap-4">
+
                 <div className="divide-x-2 divide-gray-800">
                     <p className="text-gray-800 ml-2 font-semibold">Efficiency</p>
                     <Typography variant="h6" gutterBottom>
