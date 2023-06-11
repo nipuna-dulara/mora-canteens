@@ -109,50 +109,43 @@ const Review = ({ comment, rating, timestamp }) => {
 
 //server side props
 
-export async function getServerSideProps(context) {
+
+export async function getStaticPaths() {
+    // Fetch the available canteens from the Firestore database
     const db = getFirestore(app);
-
-    console.log(context.params.canteen)
-    const q = query(collection(db, "Canteens"), where("name", "==", context.params.canteen));
-
-    let can;
+    const q = query(collection(db, 'Canteens'));
     const canteens = await getDocs(q);
-    canteens.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data());
-        can = doc.data();
-    });
-    console.log("get reviews function")
-    // Execute the query to retrieve the document
-    const querySnapshot = await getDocs(q);
 
-    // Get the reference to the specific document
-    const docRef1 = querySnapshot.docs[0].ref;
-
-    // Reference the "Reviews" collection inside the document
-    const reviewsCollectionRef = collection(docRef1, "Reviews");
-    const priceCollectionRef = collection(docRef1, "Prices");
-    let reviews = [];
-    let prices = [];
-    const priceQuerySnapshot = await getDocs(priceCollectionRef);
-
-    priceQuerySnapshot.forEach((doc) => {
-
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data());
-        prices.push(doc.data())
+    // Generate the paths based on the available canteens
+    const paths = canteens.docs.map((doc) => {
+        const canteen = doc.data();
+        return {
+            params: { canteen: canteen.name },
+        };
     });
 
-    const limitedReviewsQuery = query(reviewsCollectionRef, limit(20), where("approved", "==", true), orderBy("time"));
+    return {
+        paths,
+        fallback: false, // Set to true if some paths are not statically generated
+    };
+}
+
+export async function getStaticProps({ params }) {
+    const db = getFirestore(app);
+    const q = query(collection(db, 'Canteens'), where('name', '==', params.canteen));
+
+    const canteens = await getDocs(q);
+    const can = canteens.docs[0].data();
+
+    const reviewsCollectionRef = collection(canteens.docs[0].ref, 'Reviews');
+    const priceCollectionRef = collection(canteens.docs[0].ref, 'Prices');
+
+    const pricesQuerySnapshot = await getDocs(priceCollectionRef);
+    const prices = pricesQuerySnapshot.docs.map((doc) => doc.data());
+
+    const limitedReviewsQuery = query(reviewsCollectionRef, limit(20), where('approved', '==', true), orderBy('time'));
     const reviewsQuerySnapshot = await getDocs(limitedReviewsQuery);
-
-    reviewsQuerySnapshot.forEach((doc) => {
-
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data());
-        reviews.push(doc.data())
-    });
-
+    const reviews = reviewsQuerySnapshot.docs.map((doc) => doc.data());
 
     return {
         props: { can, reviews, prices }, // will be passed to the page component as props
