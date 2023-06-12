@@ -148,7 +148,8 @@ export async function getStaticProps({ params }) {
     const reviews = reviewsQuerySnapshot.docs.map((doc) => doc.data());
 
     return {
-        props: { can, reviews, prices }, // will be passed to the page component as props
+        props: { can, reviews, prices },
+        revalidate: 300, // will be passed to the page component as props
     };
 }
 export default function Page({ can, reviews, prices }) {
