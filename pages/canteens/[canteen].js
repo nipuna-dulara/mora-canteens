@@ -101,7 +101,9 @@ const Review = ({ comment, rating, timestamp }) => {
 
             </div>
             {/* Display review comment */}
-            <div className="text-gray-800">{comment}</div>
+            <div className="text-gray-800 whitespace-pre-wrap break-words">
+                {comment}
+            </div>
         </div>
     );
 };

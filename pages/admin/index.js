@@ -30,36 +30,35 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig, 'admin');
 
-export async function getServerSideProps(context) {
-    let canteens = [];
-    let reviewsl = [];
+export async function getStaticProps() {
+    const canteens = [];
+    const reviewsl = [];
+    const showArray = [];
+
+    // Replace `app` with your Firebase app initialization code
+
     const db = getFirestore(app);
-    const canteens2 = await getDocs(collection(db, 'Canteens'));
 
-    canteens2.forEach((doc) => {
-
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data());
-        canteens.push(doc.data())
+    const canteensSnapshot = await getDocs(collection(db, 'Canteens'));
+    canteensSnapshot.forEach((doc) => {
+        canteens.push(doc.data());
     });
-    const approvedReviewsQuery = query(collection(db, 'Reviews'), orderBy('time', 'desc'));
-    const reviews = await getDocs(approvedReviewsQuery);
-    let reviewData;
-    let showArray = [];
-    reviews.forEach((doc) => {
 
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data());
-        reviewData = doc.data();
+    const reviewsQuery = query(collection(db, 'Reviews'), orderBy('time', 'desc'));
+    const reviewsSnapshot = await getDocs(reviewsQuery);
+    reviewsSnapshot.forEach((doc) => {
+        const reviewData = doc.data();
         reviewData.id = doc.id;
-        showArray.push(true);
         reviewsl.push(reviewData);
+        showArray.push(true);
     });
 
     return {
-        props: { canteens, reviewsl, showArray }, // will be passed to the page component as props
+        props: { canteens, reviewsl, showArray },
+        revalidate: 300, // Set revalidation time in seconds
     };
 }
+
 export default function AdminInterface({ canteens, reviewsl, showArray }) {
     const storage = getStorage(app);
     const [password, setPassword] = useState('');
@@ -215,12 +214,20 @@ export default function AdminInterface({ canteens, reviewsl, showArray }) {
                         const formattedTime = dateObject.toLocaleTimeString();
                         console.log(complain.complain);
                         let images = JSON.parse(complain.images);
+
                         return (
                             <div className="bg-white text-black rounded-lg shadow-md p-4 mb-4" key={complain.id}>
+                                {/* <IconButton color="primary" aria-label="delete" onClick={() => {
+                                    onClickhandler(true)
+                                }}>
+                                    <DeleteIcon />
+                                </IconButton> */}
                                 <p className="font-bold">{complain.type}</p>
                                 <p>{formattedDate}</p>
                                 <p>{formattedTime}</p>
-                                <p>{complain.complain}</p>
+                                <div className="text-gray-800 whitespace-pre-wrap break-words">
+                                    {complain.complain}
+                                </div>
 
                                 <div className="flex items-center mb-2">
                                     <div className="mr-2 items-start flex justify-start">
@@ -339,7 +346,9 @@ export default function AdminInterface({ canteens, reviewsl, showArray }) {
 
                     </div>
                     {/* Display review comment */}
-                    <div className="text-gray-800">{comment}</div>
+                    <div className="text-gray-800 whitespace-pre-wrap break-words">
+                        {comment}
+                    </div>
 
                     <IconButton color="primary" aria-label="delete" onClick={() => {
                         onClickhandler(true)
