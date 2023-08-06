@@ -14,9 +14,10 @@ export default function App({ Component, pageProps }) {
   return (
     <appContext.Provider value={{ sContext, setsContext }}>
       <div className="min-h-screen bg-gradient-to-b from-sky-800 to-gray-400" >
-        <Head>
+        {/* <Head>
           <title>Mora Cuisine</title>
-        </Head>
+       
+        </Head> */}
         <header className="bg-sky-950 shadow-lg fixed top-0 w-full " style={{ zIndex: 2000 }}>
           <nav className="container mx-auto py-1 px-6 md:px-12">
             <div className="flex flex-col md:flex-row justify-between md:items-center">
@@ -36,7 +37,7 @@ export default function App({ Component, pageProps }) {
               height={24} // Adjust the height according to your logo size
             />
           </div>
-          <p className="text-center text-sm mb-">MSU © 2023</p>
+          <p className="text-center text-sm mb-">EFSU © 2023</p>
         </footer>
 
       </div>

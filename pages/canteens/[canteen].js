@@ -288,15 +288,39 @@ export default function Page({ can, reviews, prices }) {
                         <div className="container mx-auto py-8 text-black">
                             <h1 className="text-3xl font-bold mb-4">Price List</h1>
                             {priceList.length > 0 ? (
-                                <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                    {priceList.map((item) => (
-                                        <div key={item.id} className="bg-gradient-to-b max-w-sm from-yellow-50 to-white p-2  rounded-lg shadow-md">
-                                            <h2 className="text-xl font-semibold mb-1">{item.name}</h2>
 
-                                            <p className="text-gray-700 text-lg  ">Rs. {item.price}</p>
-                                        </div>
-                                    ))}
+
+                                <div className="price-list bg-blue-100 p-4 rounded-lg shadow-md">
+                                    <table className="w-full border-collapse border-black-300">
+                                        <thead>
+                                            <tr>
+                                                <th className="text-cyan-900 px-4 py-2">Item</th>
+                                                <th className="text-cyan-900 px-4 py-2">Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {priceList.map((item) => (
+                                                <tr key={item.id}>
+                                                    <td className="text-black px-4 py-1">{item.name}</td>
+                                                    <td className="text-black px-4 py-1">Rs. {item.price}</td>
+
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+
+                                    <style jsx>{`
+               .price-list {
+                 max-width: 600px;
+                 margin: 0 auto;
+               }
+               tr.border-b td {
+                border-bottom: 1px solid #d2d6dc;
+              }
+             `}</style>
                                 </div>
+
+
                             ) : (
                                 <p>Loading price list...</p>
                             )}
