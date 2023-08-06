@@ -52,14 +52,14 @@ export async function getStaticProps() {
         reviewsl.push(reviewData);
         showArray.push(true);
     });
-
+    const adminPassword = process.env.REACT_APP_ADMIN_PASSWORD;
     return {
-        props: { canteens, reviewsl, showArray },
-        revalidate: 300, // Set revalidation time in seconds
+        props: { canteens, reviewsl, showArray, adminPassword },
+        revalidate: 3000, // Set revalidation time in seconds
     };
 }
 
-export default function AdminInterface({ canteens, reviewsl, showArray }) {
+export default function AdminInterface({ canteens, reviewsl, showArray, adminPassword }) {
     const storage = getStorage(app);
     const [password, setPassword] = useState('');
     const [authenticated, setAuthenticated] = useState(false);
@@ -68,7 +68,9 @@ export default function AdminInterface({ canteens, reviewsl, showArray }) {
     const handlePasswordSubmit = (e) => {
         e.preventDefault();
         // Check if the entered password is correct
-        if (password === 'adminPw1234') {
+
+
+        if (password === adminPassword) {
             setAuthenticated(true);
         } else {
             setAuthenticated(false);
